@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}SafeTweet | Feed{% endblock %}
+
+{% block content %}
+    <div class="container form-container">
+    <form action={{ url_for('render') }} method="post" enctype="multipart/form-data">
+        <label for="title">Title</label><br>
+        <textarea id="title" name="title" rows="1" maxlength="64" required></textarea><br><br>
+        <label for="post">Post</label><br>
+        <textarea id="post" name="post" rows="4" maxlength="256" required></textarea><br><br>
+        <div class="form-buttons-container">
+            <input type="file" id="image" name="image" accept="image/*" class="common-button" onchange="updateLabel()">
+            <label for="image" id="image-label">Select an image</label>
+            <input type="submit" value="Tweet!" class="futuristic-button">
+        </div>
+    </form>
+</div>
+
+    <div class="container posts-container">
+        {% if posts|length > 0 %}
+            <ul>
+                {% for post in posts %}
+                    <li class="post" style="display: flex;">
+                        <div style="flex: 1;">
+                            <p><strong><u>{{ post[3] }}</u></strong> has posted the following Tweet:</p>
+                            <br>
+                            <h2>{{ post[0] }}</h2>
+                            <p>{{ post[1] | safe }}</p>
+                            <h6>{{ post[2] }}</h6>
+                        </div>
+                        {% if post[4] %}
+                            <div style="flex: 0 0 auto; margin-left: 20px;">
+                                <img src="{{ url_for('static', filename='uploads/' + post[4]) }}" alt="Post Image"
+                                     style="max-width: 320px;">
+                            </div>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No posts yet! Be the first one to post!</p>
+        {% endif %}
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}

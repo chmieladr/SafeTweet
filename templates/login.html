@@ -1,0 +1,32 @@
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <title>SafeTweet | Login</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icon.png') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body>
+<div class="container auth-container">
+    <h1>Login</h1>
+    <form method="POST">
+        <label for="username">Username</label><br>
+        <input type="text" id="username" name="username" required><br><br>
+        <label for="password">Password</label><br>
+        <input type="password" id="password" name="password" required><br><br>
+        <label for="token">2FA Token</label><br>
+        <input type="text" id="token" name="token" required><br><br>
+        <div class="center">
+            <input type="submit" id="login" class="common-button login-button"/>
+            <label for="login" id="login-label">Login</label>
+        </div>
+    </form>
+    <div class="center">
+        <form action={{ url_for('register') }}>
+            <input type="submit" id="register" class="common-button register-button"/>
+            <label for="register" id="register-label">Register</label>
+        </form>
+    </div>
+</div>
+</body>
+</html>

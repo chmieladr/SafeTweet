@@ -1,0 +1,62 @@
+.auth-container {
+    max-width: 600px;
+}
+
+.login-button + label {
+    background-color: #888;
+}
+
+.login-button + label:hover {
+    background-color: #999;
+}
+
+.login-button + label:active {
+    background-color: #aaa;
+}
+
+.register-button + label {
+    background-color: #555;
+}
+
+.register-button + label:hover {
+    background-color: #666;
+}
+
+.register-button + label:active {
+    background-color: #777;
+}
+
+#strength-bar {
+    width: 30%;
+    height: 20px;
+    background-color: #333;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+}
+
+#strength-bar div {
+    height: 100%;
+    text-align: center;
+    color: white;
+    border-radius: 10px;
+}
+
+.pwd-weak {
+    width: 25%;
+    background-color: red;
+}
+
+.pwd-moderate {
+    width: 50%;
+    background-color: orange;
+}
+
+.pwd-strong {
+    width: 75%;
+    background-color: yellow;
+}
+
+.pwd-very-strong {
+    width: 100%;
+    background-color: green;
+}

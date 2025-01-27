@@ -1,0 +1,18 @@
+.mfa-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.mfa-container .info {
+    flex: 1;
+}
+
+.mfa-container .qr-code {
+    flex: 1;
+    text-align: right;
+}
+
+.mfa-note {
+    margin-top: 20px;
+    color: red;
+}

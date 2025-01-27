@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}SafeTweet{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icon.png') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="header">
+    <div class="left">
+        <img src="{{ url_for('static', filename='images/icon.png') }}" alt="SafeTweet Logo" width="90px" height="90px">
+        <h1>SafeTweet</h1>
+    </div>
+    <div class="right">
+        <div class="logged_as">
+            <p>Logged in as <u>{{ username }}</u></p>
+        </div>
+        <form action={{ url_for('logout') }}>
+            <input type="submit" id="logout" class="common-button"/>
+            <label for="logout" id="logout-label">Log out</label>
+        </form>
+    </div>
+</div>
+{% block content %}{% endblock %}
+</body>
+</html>

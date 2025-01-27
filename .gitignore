@@ -1,0 +1,17 @@
+# IDE-specific files
+.idea/
+.vscode/
+
+# Virtual environment
+venv/
+
+# .env file
+.env
+
+# Entire data stored
+static/uploads/
+sqlite3.db
+
+# Other
+certs/
+docs/

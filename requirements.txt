@@ -1,0 +1,18 @@
+# Upgrade pip
+pip>=24.3.1
+
+# Flask-related dependencies
+flask
+flask_login
+Flask-Limiter
+
+# Other dependencies
+bcrypt
+bleach
+cryptography
+markdown
+pyotp
+python-dotenv
+redis
+qrcode[pil]
+Werkzeug

@@ -1,0 +1,29 @@
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <title>SafeTweet | Unauthorized</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icon.png') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body>
+<div class="container auth-container">
+    <h1>Unauthorized</h1>
+    <p>The server could not verify that you are authorized to access the URL requested. Here are some possible reasons
+        why:</p>
+    <ul>
+        <li>You are not logged in.</li>
+        <li>Your session has expired.</li>
+        <li>The credentials you have supplied are wrong.</li>
+        <li>You are trying to access a resource that you do not have permission to access.</li>
+        <li>Your browser doesn't understand how to supply the credentials required.</li>
+    </ul>
+    <div class="center">
+        <form action={{ url_for('login') }}>
+            <input type="submit" id="login" class="common-button"/>
+            <label for="login" id="login-label">Login</label>
+        </form>
+    </div>
+</div>
+</body>
+</html>
