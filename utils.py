@@ -4,11 +4,24 @@ from base64 import b64encode
 from io import BytesIO
 
 import qrcode
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
 from flask_login import UserMixin
 
 from allowed import ALLOWED_EXTENSIONS
+from forms import PasswordResetRequestForm, LoginForm, RegistrationForm, TweetForm, PasswordChangeForm, \
+    PasswordResetForm
 
 DATABASE = "./sqlite3.db"
+
+endpoint_to_form = {
+    'reset_password_request': PasswordResetRequestForm,
+    'reset_password': PasswordResetForm,
+    'login': LoginForm,
+    'register': RegistrationForm,
+    'tweet': TweetForm,
+    'change_password': PasswordChangeForm,
+}
 
 
 class User(UserMixin):
@@ -47,6 +60,23 @@ def calculate_entropy(password):
         charset_size += 32
     entropy = len(password) * math.log2(charset_size)
     return entropy
+
+
+def generate_key_pair():
+    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    public_key = private_key.public_key()
+
+    private_key_pem = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption()
+    )
+    public_key_pem = public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo
+    )
+
+    return private_key_pem, public_key_pem
 
 
 def totp_uri_to_qr_code(uri: str) -> str:

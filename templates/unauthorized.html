@@ -1,13 +1,13 @@
+<!DOCTYPE html>
 <html lang="">
 <head>
     <meta charset="UTF-8">
-    <title>SafeTweet | Unauthorized</title>
+    <title>Unauthorized | SafeTweet</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icon.png') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/auth.css') }}">
 </head>
 <body>
-<div class="container auth-container">
+<div class="container">
     <h1>Unauthorized</h1>
     <p>The server could not verify that you are authorized to access the URL requested. Here are some possible reasons
         why:</p>
@@ -20,8 +20,7 @@
     </ul>
     <div class="center">
         <form action={{ url_for('login') }}>
-            <input type="submit" id="login" class="common-button"/>
-            <label for="login" id="login-label">Login</label>
+            <input type="submit" id="login" class="common-button" value="Login"/>
         </form>
     </div>
 </div>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Account | SafeTweet</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icon.png') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/auth.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/manage.css') }}">
+</head>
+<body>
+<div class="container auth-container">
+    <h1>Manage Account</h1>
+    <h3>Welcome, {{ username }}!</h3>
+    <div class="subcontainer">
+        <form action="{{ url_for('change_password') }}">
+            <input type="submit" class="common-button" value="Change Password"/>
+        </form>
+        <span>Change the password to your account <i>(requires 2FA)</i>.</span>
+    </div>
+    <div class="subcontainer">
+        <form action="{{ url_for('logout') }}">
+            <input type="submit" class="common-button" value="Logout"/>
+        </form>
+        <span>Log out of your account.</span>
+    </div>
+</div>
+</body>
+</html>

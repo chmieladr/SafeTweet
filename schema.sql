@@ -1,6 +1,3 @@
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS posts;
-
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL UNIQUE,
@@ -8,7 +5,8 @@ CREATE TABLE IF NOT EXISTS users (
     salt TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
     totp_secret TEXT NOT NULL,
-    public_key TEXT NOT NULL,
+    private_key BLOB NOT NULL,
+    public_key BLOB NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -17,6 +15,7 @@ CREATE TABLE IF NOT EXISTS posts (
     title TEXT NOT NULL,
     body TEXT NOT NULL,
     image TEXT,
+    signature BLOB NOT NULL,
     user_id INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (id)

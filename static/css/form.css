@@ -1,0 +1,39 @@
+.form-buttons-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.form-buttons-container .futuristic-button {
+    margin-left: 20px;
+}
+
+.futuristic-button {
+    background: linear-gradient(45deg, #00dbde, #fc00ff);
+    border: none;
+    border-radius: 25px;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.futuristic-button:hover {
+    background: linear-gradient(60deg, #00dbde, #fc00ff);
+    transform: translateY(-2px);
+}
+
+.futuristic-button:active {
+    transform: translateY(2px);
+}
+
+#title {
+    height: auto;
+    min-height: 1em;
+}
+
+#post {
+    height: auto;
+    min-height: 8em;
+}

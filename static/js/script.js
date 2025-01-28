@@ -1,13 +1,3 @@
-function updateLabel() {
-    let input = document.getElementById('image');
-    let label = document.getElementById('image-label');
-    if (input.files.length > 0) {
-        label.textContent = input.files[0].name;
-    } else {
-        label.textContent = 'Select an image (optional)';
-    }
-}
-
 function calculatePasswordSafety(password) {
     if (!password)
         return "N/A";
@@ -44,8 +34,9 @@ function calculatePasswordSafety(password) {
     return safety;
 }
 
-function updateStrengthBar() {
-    const password = document.getElementById('password').value;
+// noinspection JSUnusedGlobalSymbols
+function updateStrengthBar(elementId) {
+    const password = document.getElementById(elementId).value;
     const strengthBar = document.getElementById('strength-bar').firstElementChild;
     const passwordSafety = document.getElementById('password-safety');
 
@@ -70,4 +61,8 @@ function updateStrengthBar() {
     }
 
     passwordSafety.textContent = safety;
+}
+
+function goToTop() {
+    window.scrollTo({top: 0, behavior: 'smooth'});
 }

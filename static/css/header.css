@@ -1,0 +1,31 @@
+.header {
+    width: 100%;
+    background-color: #1e1e1e;
+    padding: 5px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #333;
+}
+
+.header .left, .right {
+    display: flex;
+    align-items: center;
+    height: 100%
+}
+
+.header .left {
+    cursor: pointer;
+}
+
+.header .right, .header img, .logged_as {
+    margin-right: 10px;
+}
+
+.header form {
+    margin: 0;
+}

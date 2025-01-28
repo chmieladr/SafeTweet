@@ -1,0 +1,13 @@
+.subcontainer {
+    background-color: #484848;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.subcontainer span {
+    text-align: right;
+}

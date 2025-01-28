@@ -2,30 +2,6 @@
     max-width: 600px;
 }
 
-.login-button + label {
-    background-color: #888;
-}
-
-.login-button + label:hover {
-    background-color: #999;
-}
-
-.login-button + label:active {
-    background-color: #aaa;
-}
-
-.register-button + label {
-    background-color: #555;
-}
-
-.register-button + label:hover {
-    background-color: #666;
-}
-
-.register-button + label:active {
-    background-color: #777;
-}
-
 #strength-bar {
     width: 30%;
     height: 20px;

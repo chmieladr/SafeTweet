@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <title>Feed | SafeTweet</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icon.png') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/form.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/header.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/posts.css') }}">
+</head>
+<body>
+<div class="header">
+    <div class="left" onclick="goToTop()">
+        <img src="{{ url_for('static', filename='images/icon.png') }}" alt="SafeTweet Logo" width="90px" height="90px">
+        <h1>SafeTweet</h1>
+    </div>
+    <div class="right">
+        <div class="logged_as">
+            <p>Logged in as <u>{{ username }}</u></p>
+        </div>
+        <form action={{ url_for('manage') }}>
+            <input type="submit" id="manage" class="common-button" value="Manage"/>
+        </form>
+    </div>
+</div>
+<div class="container form-container">
+    {% if error %}
+        <div class="error-dialog">
+            <p>{{ error }}</p>
+        </div>
+    {% endif %}
+    <form id="post-form" action={{ url_for('tweet') }} method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <label for="title">Title</label><br>
+        {{ form.title(maxlength=64) }}<br><br>
+        <label for="post">Post</label><br>
+        {{ form.post(maxlength=512) }}<br><br>
+        <div class="form-buttons-container">
+            {{ form.image(class="common-button", id="image", onchange="updateImageLabel()") }}
+            {{ form.submit(class="futuristic-button") }}
+        </div>
+    </form>
+</div>
+
+<div class="container posts-container">
+    {% if posts_error %}
+        <div class="error-dialog">
+            <p>{{ posts_error }}</p>
+        </div>
+    {% endif %}
+    {% if posts|length > 0 %}
+        <ul>
+            {% for post in posts %}
+                <li class="post">
+                    <div class="content">
+                        <p><strong><u>{{ post[3] }}</u></strong> has posted the following Tweet:</p>
+                        <br>
+                        <h2>{{ post[0] }}</h2>
+                        <p>{{ post[1] | safe }}</p>
+                        <h6>{{ post[2] }} |
+                            {% if post[5] %}
+                                <span class="verified">✔ Digital Signature Verified</span>
+                            {% else %}
+                                <span class="not-verified">✘ Digital Signature Verification Failed</span>
+                            {% endif %} </h6>
+                    </div>
+                    {% if post[4] %}
+                        <div class="image">
+                            <img src="{{ url_for('static', filename='uploads/' + post[4]) }}" alt="Post Image">
+                        </div>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No posts yet! Be the first one to post!</p>
+    {% endif %}
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

@@ -2,16 +2,21 @@
 .idea/
 .vscode/
 
+# Python cache
+__pycache__/
+
 # Virtual environment
 venv/
 
 # .env file
 .env
 
-# Entire data stored
-static/uploads/
-sqlite3.db
-
-# Other
+# Certificates
 certs/
-docs/
+
+# Entire data stored
+static/uploads/*.png
+static/uploads/*.jpg
+static/uploads/*.jpeg
+static/uploads/*.gif
+sqlite3.db
