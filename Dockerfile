@@ -7,8 +7,8 @@ COPY . /app
 
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
+RUN python3 gen_env.py
 
 ENV FLASK_APP=app.py
 
-CMD ["python3", "gen_env.py"]
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "app:app"]

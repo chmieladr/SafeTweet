@@ -1,3 +1,12 @@
+document.addEventListener('DOMContentLoaded', function () {
+    const passwordField = document.querySelector('.password-field');
+    if (passwordField) {
+        passwordField.addEventListener('input', function () {
+            updateStrengthBar(passwordField.id);
+        });
+    }
+});
+
 function calculatePasswordSafety(password) {
     if (!password)
         return "N/A";
@@ -61,8 +70,4 @@ function updateStrengthBar(elementId) {
     }
 
     passwordSafety.textContent = safety;
-}
-
-function goToTop() {
-    window.scrollTo({top: 0, behavior: 'smooth'});
 }

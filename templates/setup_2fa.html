@@ -2,10 +2,10 @@
 <html lang="">
 <head>
     <meta charset="UTF-8">
-    <title>Setup 2FA | SafeTweet</title>
+    <title>Setup 2FA | {{ APP_NAME }}</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icon.png') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/mfa.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/auth.css') }}">
 </head>
 <body>
 
@@ -20,7 +20,7 @@
         <p>Scan the QR code with your authenticator app!</p>
         <p class="mfa-note"><b>Note:</b> Failing to add the TOTP app will make you unable to log onto your account!</p>
         <div class="center">
-            <form action="{{ url_for('login') }}">
+            <form action="{{ url_for('auth.login') }}">
                 <input type="submit" id="finish" class="common-button" value="Finish"/>
             </form>
         </div>

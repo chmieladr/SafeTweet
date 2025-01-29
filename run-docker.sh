@@ -25,4 +25,4 @@ if [ ! -f certs/key.pem ] || [ ! -f certs/cert.pem ]; then
 fi
 
 # Run the container
-docker-compose up --build
+docker-compose up

@@ -36,3 +36,36 @@
     width: 100%;
     background-color: green;
 }
+
+.mfa-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.mfa-container .info {
+    flex: 1;
+}
+
+.mfa-container .qr-code {
+    flex: 1;
+    text-align: right;
+}
+
+.mfa-note {
+    margin-top: 20px;
+    color: red;
+}
+
+.subcontainer {
+    background-color: #484848;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.subcontainer span {
+    text-align: right;
+}

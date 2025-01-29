@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  web:
+  flask:
     build: .
     volumes:
       - .:/app
@@ -12,6 +12,11 @@ services:
 
   redis:
     image: "redis:alpine"
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    privileged: true
+    command: /bin/sh -c "sysctl vm.overcommit_memory=1 && redis-server /usr/local/etc/redis/redis.conf"
+
 
   nginx:
     image: nginx:alpine
@@ -21,4 +26,4 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./certs:/etc/nginx/certs
     depends_on:
-      - web
+      - flask

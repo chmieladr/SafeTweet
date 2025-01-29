@@ -4,10 +4,6 @@
     justify-content: space-between;
 }
 
-.form-buttons-container .futuristic-button {
-    margin-left: 20px;
-}
-
 .futuristic-button {
     background: linear-gradient(45deg, #00dbde, #fc00ff);
     border: none;

@@ -2,6 +2,7 @@
 flask
 flask-limiter
 flask-login
+flask-talisman
 flask-wtf
 wtforms
 

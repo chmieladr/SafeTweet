@@ -1,8 +1,9 @@
+import logging
 import secrets
 
 # Set the way of rendering values in the .env file here
 config = {
-    "SECRET_KEY": secrets.token_hex(32),
+    "SECRET_KEY": secrets.token_hex(32)
 }
 
 # Set the path to the .env file here (default: '.env')
@@ -14,10 +15,12 @@ def to_title(snake_case: str) -> str:
 
 
 if __name__ == "__main__":
-    print("Generating .env file!")
+    logging.basicConfig(level=logging.INFO, format='%(message)s')
+
+    logging.info("Generating .env file!")
     with open(path, "w") as dot_env:
         for key, value in config.items():
-            print(f"Setting {to_title(key)}...")
+            logging.info(f"Setting {to_title(key)}...")
             dot_env.write(f"{key}={value}\n")
 
-    print("Done!")
+    logging.info("Done!")

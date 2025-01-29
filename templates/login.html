@@ -2,7 +2,7 @@
 <html lang="">
 <head>
     <meta charset="UTF-8">
-    <title>Login | SafeTweet</title>
+    <title>Login | {{ APP_NAME }}</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icon.png') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/auth.css') }}">
@@ -28,12 +28,12 @@
         </div>
     </form>
     <div class="center">
-        <form action="{{ url_for('register') }}">
+        <form action="{{ url_for('auth.register') }}">
             <input type="submit" id="register" class="common-button" value="Register"/>
         </form>
     </div>
     <div class="center">
-        <form action="{{ url_for('reset_password_request') }}">
+        <form action="{{ url_for('auth.reset_password_request') }}">
             <input type="submit" id="reset_password_request" class="common-button" value="Forgot Password?"/>
         </form>
     </div>

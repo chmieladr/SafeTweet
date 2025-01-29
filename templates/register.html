@@ -2,7 +2,7 @@
 <html lang="">
 <head>
     <meta charset="UTF-8">
-    <title>Register | SafeTweet</title>
+    <title>Register | {{ APP_NAME }}</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icon.png') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/auth.css') }}">
@@ -22,7 +22,7 @@
         <label for="email">E-mail</label><br>
         {{ form.email }}<br><br>
         <label for="password">Password</label><br>
-        {{ form.password(oninput="updateStrengthBar('password')") }}<br><br>
+        {{ form.password(class="password-field") }}<br><br>
         <label for="confirm_password">Confirm Password</label><br>
         {{ form.confirm_password }}<br><br>
         <div class="center">
@@ -37,12 +37,12 @@
         </div>
     </form>
     <div class="center">
-        <form action="{{ url_for('login') }}">
+        <form action="{{ url_for('auth.login') }}">
             <input type="submit" id="back-to-login" class="common-button login-button" value="Back to Login"/>
         </form>
     </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script nonce="{{ csp_nonce() }}" src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
