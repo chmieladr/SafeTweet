@@ -1,11 +1,12 @@
+import logging
 import math
+import sqlite3
 from base64 import b64encode
 from io import BytesIO
 
 import bcrypt
-from cryptography.exceptions import InvalidSignature
-from cryptography.hazmat.primitives import serialization, hashes
-from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey, RSAPublicKey
 from flask_login import UserMixin
 from qrcode.main import QRCode
 
@@ -46,21 +47,23 @@ def calculate_entropy(password) -> float:
     return entropy
 
 
-def generate_key_pair() -> tuple[bytes, bytes]:
+def generate_key_pair() -> tuple[RSAPrivateKey, RSAPublicKey]:
     private_key = rsa.generate_private_key(public_exponent=65537, key_size=4096)
     public_key = private_key.public_key()
 
-    private_key_pem = private_key.private_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PrivateFormat.PKCS8,
-        encryption_algorithm=serialization.NoEncryption()
-    )
-    public_key_pem = public_key.public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo
-    )
+    return private_key, public_key
 
-    return private_key_pem, public_key_pem
+
+def init_db():
+    logging.info("Initializing database...")
+    with open('schema.sql', 'r') as schema:
+        script = schema.read()
+
+    database = sqlite3.connect(Config.DATABASE_URL)
+    database.cursor().executescript(script)
+    database.commit()
+    database.close()
+
 
 
 def is_image(filename: str) -> bool:
@@ -81,20 +84,3 @@ def totp_uri_to_qr_code(uri: str) -> str:
     buffered = BytesIO()
     img.save(buffered)
     return b64encode(buffered.getvalue()).decode("utf-8")
-
-
-def verify_signature(public_key_pem: bytes, signature: bytes, body: str) -> bool:
-    try:
-        public_key = serialization.load_pem_public_key(public_key_pem)
-        public_key.verify(
-            signature,
-            body.encode('utf-8'),
-            padding.PSS(
-                mgf=padding.MGF1(hashes.SHA256()),
-                salt_length=padding.PSS.MAX_LENGTH
-            ),
-            hashes.SHA256()
-        )
-        return True
-    except (ValueError, TypeError, InvalidSignature):
-        return False

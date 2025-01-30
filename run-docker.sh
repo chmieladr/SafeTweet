@@ -7,7 +7,6 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Generate certificates signed by the fictional CA (if they don't exist)
-mkdir -p certs
 if [ ! -f certs/key.pem ] || [ ! -f certs/cert.pem ]; then
   echo "Generating certificates signed by the fictional CA..."
   openssl genrsa -out ca.key 4096
@@ -25,4 +24,4 @@ if [ ! -f certs/key.pem ] || [ ! -f certs/cert.pem ]; then
 fi
 
 # Run the container
-docker-compose up
+docker-compose up --build

@@ -10,5 +10,5 @@ login_manager = LoginManager()
 # Rate Limiter
 limiter = Limiter(
     get_remote_address,
-    storage_uri=Config.REDIS_URL
+    # storage_uri=Config.REDIS_URL
 )

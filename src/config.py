@@ -15,10 +15,18 @@ class Config:
     SESSION_COOKIE_SECURE = True
 
     # Password hashing rounds
-    BCRYPT_ROUNDS = 12
+    BCRYPT_ROUNDS = 10
+
+    # TOTP symmetric key
+    SYMMETRIC_KEY = '46WTbmzSaK2J1XGftp2Po8qnvPWuYte0DKY1uDXQpCQ='
 
     # Password reset salt
-    PWD_RESET_SALT = 'password-reset-salt'
+    PWD_RESET_SALT = 'Password-Reset-Salt-1234'
+
+    # Key storage parameters for a private key
+    KEY_LOCATION = 'key.pem'
+    KEY_PASSWORD = 'Private-Key-Password-9876'
+    KEY_WARNING = '--- DO NOT SHARE THIS FILE WITH ANYONE! ---'
 
     # Folder for storing post images
     UPLOAD_FOLDER = 'static/uploads'
@@ -32,7 +40,7 @@ class Config:
         'default-src': "'self'",
         'script-src': "'self'",
         'style-src': "'self'",
-        'img-src': "'self' blob:",
+        'img-src': "'self' data:",
         'connect-src': "'self'",
         'object-src': "'none'",
         'base-uri': "'none'",

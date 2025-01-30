@@ -78,7 +78,6 @@
     {% endif %}
 </div>
 
-{{ csp_nonce() }}
 <script nonce="{{ csp_nonce() }}" src="{{ url_for('static', filename='js/feed.js') }}"></script>
 </body>
 </html>

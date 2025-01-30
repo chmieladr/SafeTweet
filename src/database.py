@@ -1,9 +1,12 @@
+import hashlib
 import os
 import sqlite3
 import uuid
 
+from cryptography.exceptions import InvalidSignature
+from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import serialization, hashes
-from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives.asymmetric import padding, rsa
 from flask import current_app
 from werkzeug.utils import secure_filename
 
@@ -21,7 +24,8 @@ def get_user_by_username(username: str) -> User:
                 (username,))
     row = sql.fetchone()
     user = User()
-    user.user_id, user.id, user.password, user.salt, user.totp_secret = row
+    user.user_id, user.id, user.password, user.salt, encrypted_totp_secret = row
+    user.totp_secret = Fernet(current_app.config['SYMMETRIC_KEY'].encode()).decrypt(encrypted_totp_secret).decode()
     return user
 
 
@@ -32,7 +36,8 @@ def get_user_by_id(user_id: int) -> User:
                 (user_id,))
     row = sql.fetchone()
     user = User()
-    user.user_id, user.id, user.password, user.salt, user.totp_secret = row
+    user.user_id, user.id, user.password, user.salt, encrypted_totp_secret = row
+    user.totp_secret = Fernet(current_app.config['SYMMETRIC_KEY'].encode()).decrypt(encrypted_totp_secret).decode()
     return user
 
 
@@ -54,14 +59,16 @@ def validate_existing_user(username: str, email: str):
     return message
 
 
-def register_user(username: str, hashed_password: bytes, salt: bytes, email: str, totp_secret: str,
-                  private_key_pem: bytes, public_key_pem: bytes):
+def register_user(username: str, hashed_password: bytes, salt: bytes, email: str, totp_secret: str):
     db = get_connection()
     sql = db.cursor()
+
+    totp_secret = Fernet(current_app.config['SYMMETRIC_KEY'].encode()).encrypt(totp_secret.encode())
+
     sql.execute(
-        "INSERT INTO users (username, password, salt, email, totp_secret, private_key, public_key)"
-        "VALUES (?, ?, ?, ?, ?, ?, ?)",
-        (username, hashed_password, salt, email, totp_secret, private_key_pem, public_key_pem))
+        "INSERT INTO users (username, password, salt, email, totp_secret) VALUES (?, ?, ?, ?, ?)",
+        (username, hashed_password, salt, email, totp_secret)
+    )
     db.commit()
     db.close()
 
@@ -69,6 +76,9 @@ def register_user(username: str, hashed_password: bytes, salt: bytes, email: str
 def update_2fa(user_id: int, totp_secret: str):
     db = get_connection()
     sql = db.cursor()
+
+    totp_secret = Fernet(current_app.config['SYMMETRIC_KEY'].encode()).encrypt(totp_secret.encode())
+
     sql.execute("UPDATE users SET totp_secret = ? WHERE id = ?", (totp_secret, user_id))
     db.commit()
     db.close()
@@ -78,6 +88,18 @@ def update_password(user_id: int, hashed_password: bytes, salt: bytes):
     db = get_connection()
     sql = db.cursor()
     sql.execute("UPDATE users SET password = ?, salt = ? WHERE id = ?", (hashed_password, salt, user_id))
+    db.commit()
+    db.close()
+
+
+def insert_public_key(user_id: int, public_key: rsa.RSAPublicKey):
+    db = get_connection()
+    sql = db.cursor()
+    public_key_pem = public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo
+    )
+    sql.execute("INSERT INTO public_keys (user_id, public_key) VALUES (?, ?)", (user_id, public_key_pem))
     db.commit()
     db.close()
 
@@ -96,7 +118,7 @@ def fetch_posts():
     db = get_connection()
     sql = db.cursor()
     sql.execute("""
-        SELECT p.title, p.body, p.created_at, u.username, p.image, p.signature, u.public_key
+        SELECT p.title, p.body, p.created_at, u.username, p.image, p.signature, u.id
         FROM posts p
         JOIN users u ON p.user_id = u.id
         ORDER BY p.created_at DESC
@@ -106,15 +128,53 @@ def fetch_posts():
     return posts
 
 
+def verify_signature(signature: bytes, user_id: int, title: str, sanitized_text: str) -> bool:
+    keys = fetch_public_keys_by_user_id(user_id)
+    message = f"{user_id}:{title}:{sanitized_text}".encode()
+    message_hash = hashlib.sha256(message).digest()
+
+    for key in keys:
+        public_key = serialization.load_pem_public_key(key[0])
+        try:
+            public_key.verify(
+                signature,
+                message_hash,
+                padding.PSS(
+                    mgf=padding.MGF1(hashes.SHA256()),
+                    salt_length=padding.PSS.MAX_LENGTH
+                ),
+                hashes.SHA256()
+            )
+            return True
+        except InvalidSignature:
+            continue
+
+    return False
+
+
+def fetch_public_keys_by_user_id(user_id: int):
+    db = get_connection()
+    sql = db.cursor()
+    sql.execute("SELECT public_key FROM public_keys WHERE user_id = ?", (user_id,))
+    public_keys = sql.fetchall()
+    db.close()
+    return public_keys
+
+
 def insert_post(title: str, sanitized_text: str, user_id: int, form_image):
     db = get_connection()
     sql = db.cursor()
-    sql.execute("SELECT private_key FROM users WHERE id = ?", (user_id,))
-    private_key_pem = sql.fetchone()[0]
-    private_key = serialization.load_pem_private_key(private_key_pem, password=None)
 
+    with open(current_app.config['KEY_LOCATION'], "r") as f:
+        private_key_pem = f.read()
+        private_key = serialization.load_pem_private_key(
+            private_key_pem.encode('utf-8'),
+            password=current_app.config['KEY_PASSWORD'].encode('utf-8')
+        )
+
+    message_hash = hashlib.sha256(f"{user_id}:{title}:{sanitized_text}".encode()).digest()
     signature = private_key.sign(
-        sanitized_text.encode(),
+        message_hash,
         padding.PSS(
             mgf=padding.MGF1(hashes.SHA256()),
             salt_length=padding.PSS.MAX_LENGTH

@@ -1,14 +1,16 @@
 import logging
+import os
 import sqlite3
 
 import bcrypt
 import pyotp
+from cryptography.hazmat.primitives import serialization
 from flask import render_template, redirect, url_for, request, Blueprint, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
 
 from ..database import get_user_by_username, validate_existing_user, register_user, update_2fa, update_password, \
-    get_user_id_by_email, get_user_by_id
+    get_user_id_by_email, get_user_by_id, insert_public_key
 from ..extensions import login_manager, limiter
 from ..forms import LoginForm, RegistrationForm, PasswordChangeForm, PasswordResetRequestForm, PasswordResetForm
 from ..utils import totp_uri_to_qr_code, generate_key_pair, multiple_hash
@@ -63,10 +65,9 @@ def register():
 
         hashed_password, salt = multiple_hash(password, rounds=current_app.config['BCRYPT_ROUNDS'])
         totp_secret = pyotp.random_base32()
-        private_key_pem, public_key_pem = generate_key_pair()
 
         try:
-            register_user(username, hashed_password, salt, email, totp_secret, private_key_pem, public_key_pem)
+            register_user(username, hashed_password, salt, email, totp_secret)
         except sqlite3.Error:
             return render_template("register.html", form=form, error="Database error!")
 
@@ -96,7 +97,24 @@ def login():
         if not totp.verify(token, valid_window=1):
             return render_template("login.html", form=form, error="Invalid 2FA token!")
 
+        private_key, public_key = generate_key_pair()
+        private_key_pem = private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.BestAvailableEncryption(
+                current_app.config['KEY_PASSWORD'].encode('utf-8'))
+        )
+
+        try:
+            insert_public_key(user.user_id, public_key)
+        except sqlite3.Error as e:
+            print(e)
+            return render_template("login.html", form=form, error="Database error!")
+
         login_user(user)
+        with open(current_app.config['KEY_LOCATION'], "w") as f:
+            f.write(current_app.config['KEY_WARNING'] + "\n" + private_key_pem.decode('utf-8'))
+
         return redirect(url_for('main.feed'))
 
     return render_template("login.html", form=form)
@@ -115,7 +133,7 @@ def setup_2fa():
         except sqlite3.Error:
             return render_template("setup_2fa.html", error="Database error!")
 
-        return redirect(url_for('main.feed'))
+        return redirect(url_for('auth.logout'))
 
     user = current_user
     totp = pyotp.TOTP(user.totp_secret)
@@ -133,6 +151,7 @@ def manage():
 @login_required
 def logout():
     logout_user()
+    os.remove(current_app.config['KEY_LOCATION'])
     return redirect(url_for('auth.login'))
 
 

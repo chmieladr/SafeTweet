@@ -5,10 +5,9 @@ from flask import render_template, redirect, url_for, Blueprint, current_app
 from flask_login import login_required, current_user
 from markdown import markdown
 
-from ..database import fetch_posts, insert_post
+from ..database import fetch_posts, insert_post, verify_signature
 from ..extensions import limiter
 from ..forms import TweetForm
-from ..utils import verify_signature
 from ..validation import validate_title, validate_post
 
 # List for storing loaded posts
@@ -30,8 +29,9 @@ def feed():
 
     posts.clear()
     for post in posts_from_db:
-        title, body, created_at, username, image, signature, public_key_pem = post
-        posts.append((title, body, created_at, username, image, verify_signature(public_key_pem, signature, body)))
+        title, body, created_at, username, image, signature, user_id = post
+        posts.append((title, body, created_at, username, image,
+                      verify_signature(signature, user_id, title, sanitized_text=body)))
 
     return render_template("feed.html", username=current_user.id, posts=posts, form=form)
 

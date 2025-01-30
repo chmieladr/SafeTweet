@@ -11,12 +11,18 @@ from .blueprints.main import main_bp
 from .config import Config
 from .error_handlers import register_error_handlers
 from .extensions import login_manager, limiter
-from .utils import User, endpoint_to_form
+from .utils import User, endpoint_to_form, init_db
 
 
 def create_app():
     app = Flask(__name__, static_folder='../static', template_folder='../templates')
     app.config.from_object(Config)  # read config from config.py
+
+    # Setup logging
+    logging.basicConfig(level=logging.INFO, format=f"{'-' * 111}\n%(message)s\n{'-' * 111}")
+
+    # Database initialization
+    init_db()
 
     # App initialization
     login_manager.init_app(app)
@@ -27,9 +33,6 @@ def create_app():
 
     # Content Security Policy
     Talisman(app, content_security_policy=app.config['CSP'], content_security_policy_nonce_in=['script-src'])
-
-    # Setup logging
-    logging.basicConfig(level=logging.INFO, format=f'{'-' * 111}\n%(message)s\n{'-' * 111}')
 
     # Register Blueprints
     app.register_blueprint(auth_bp)
@@ -52,14 +55,3 @@ def create_app():
         )
 
     return app
-
-
-def init_db():
-    logging.info("Initializing database...")
-    with open('schema.sql', 'r') as schema:
-        script = schema.read()
-
-    database = sqlite3.connect(Config.DATABASE_URL)
-    database.cursor().executescript(script)
-    database.commit()
-    database.close()
