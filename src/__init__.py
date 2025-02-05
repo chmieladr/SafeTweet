@@ -1,5 +1,4 @@
 import logging
-import sqlite3
 
 from flask import Flask
 from flask_talisman import Talisman
@@ -40,12 +39,6 @@ def create_app():
 
     # Register Error Handlers
     register_error_handlers(app)
-
-    # Hide Server Header
-    @app.after_request
-    def remove_server_header(response):
-        response.headers.pop('Server', None)
-        return response
 
     # Injection of APP_NAME into templates
     @app.context_processor

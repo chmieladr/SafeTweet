@@ -146,7 +146,7 @@ def verify_signature(signature: bytes, user_id: int, title: str, sanitized_text:
                 hashes.SHA256()
             )
             return True
-        except InvalidSignature:
+        except (TypeError, InvalidSignature):
             continue
 
     return False
@@ -165,22 +165,24 @@ def insert_post(title: str, sanitized_text: str, user_id: int, form_image):
     db = get_connection()
     sql = db.cursor()
 
-    with open(current_app.config['KEY_LOCATION'], "r") as f:
-        private_key_pem = f.read()
-        private_key = serialization.load_pem_private_key(
-            private_key_pem.encode('utf-8'),
-            password=current_app.config['KEY_PASSWORD'].encode('utf-8')
+    try:
+        with open(current_app.config['KEY_LOCATION'], "r") as f:
+            private_key_pem = f.read()
+            private_key = serialization.load_pem_private_key(
+                private_key_pem.encode('utf-8'),
+                password=current_app.config['KEY_PASSWORD'].encode('utf-8')
+            )
+        message_hash = hashlib.sha256(f"{user_id}:{title}:{sanitized_text}".encode()).digest()
+        signature = private_key.sign(
+            message_hash,
+            padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH
+            ),
+            hashes.SHA256()
         )
-
-    message_hash = hashlib.sha256(f"{user_id}:{title}:{sanitized_text}".encode()).digest()
-    signature = private_key.sign(
-        message_hash,
-        padding.PSS(
-            mgf=padding.MGF1(hashes.SHA256()),
-            salt_length=padding.PSS.MAX_LENGTH
-        ),
-        hashes.SHA256()
-    )
+    except FileNotFoundError:
+        signature = None
 
     image_filename = None  # will become NULL in the database when no image is uploaded
     if form_image and is_image(form_image.filename):

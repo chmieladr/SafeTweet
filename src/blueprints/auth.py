@@ -151,7 +151,10 @@ def manage():
 @login_required
 def logout():
     logout_user()
-    os.remove(current_app.config['KEY_LOCATION'])
+    try:
+        os.remove(current_app.config['KEY_LOCATION'])
+    except FileNotFoundError:
+        pass
     return redirect(url_for('auth.login'))
 
 

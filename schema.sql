@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS posts (
     title TEXT NOT NULL,
     body TEXT NOT NULL,
     image TEXT,
-    signature BLOB NOT NULL,
+    signature BLOB,
     user_id INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (id)
